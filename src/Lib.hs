@@ -1,19 +1,10 @@
 module Lib
-    ( someFunc
-    , safeDiv
-    , factorial
+    ( parseInt 
+    , parsePoint
     ) where
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc123"
-
-safeDiv x y = 
-    let q = div x y
-    in if y == 0 then 0 else q
-
-factorial n = if n > 1
-              then n * factorial (n - 1)
-              else 1
+import Text.Read (readMaybe)
+import qualified Data.List.Split as S
 
 {-
   Shape parser 
@@ -28,3 +19,65 @@ factorial n = if n > 1
   Output:
     Maybe Shape Square Point Point
 -}
+
+
+data Point = Point Int Int 
+  deriving (Show)
+
+parseInt :: String -> Maybe Int
+parseInt = readMaybe 
+
+{- applicative and containers fmap -} 
+
+parsePoint :: String -> Maybe Point
+parsePoint s = case S.splitOn "," s of
+  [x, y] -> Point <$> 
+            parseInt x <*> 
+            parseInt y
+  _ -> Nothing
+
+data TriangleT = TriangleC Point Point Point
+  deriving (Show)
+data SquareT = SquareC Point Point
+  deriving (Show)
+
+data ShapeT
+  = ShapeTC TriangleT
+  | ShapeSC SquareT
+  deriving (Show)
+
+parseTriangle s = case tokens of
+  [x, y, z] -> TriangleC <$> 
+               parsePoint x <*> 
+               parsePoint y <*> 
+               parsePoint z 
+  _ -> Nothing
+  where 
+    tokens = S.splitOn ":" s
+
+parseSquare s = case tokens of
+  [x, y] -> SquareC <$>
+            parsePoint x <*>
+            parsePoint y
+  _ -> Nothing
+  where 
+    tokens = S.splitOn ":" s
+
+parseShape s = case tokens of
+  ["T": xs] -> parseTriangle xs
+  ["S": xs] -> parseSquare xs
+  _ -> Nothing
+  where 
+    tokens = S.splitOn ":" s
+
+{-
+
+  [x,y] -> case (parseInt x) of
+    Just x' -> case (parseInt y) of
+      Just y' -> Just (Point x' y')
+      _ -> nothing
+    _ -> Nothing
+  _ -> Nothing
+
+-} 
+

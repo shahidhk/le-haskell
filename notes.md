@@ -305,3 +305,11 @@ data Bill = Bill Person Address
 	}
 #}
 ```
+
+# 17 Jul 2017
+
+## Applicative and Functor
+
+```haskell
+(+) <$> [1..4] <*> [100..104]
+```
