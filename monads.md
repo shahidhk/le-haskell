@@ -222,4 +222,6 @@ instance Monad (Reader r) where
                             let a = f r
                             in ft a 
                           )
+  ask = Reader (\r -> r)
+  runReader r (Reader f) = f r
 ```
